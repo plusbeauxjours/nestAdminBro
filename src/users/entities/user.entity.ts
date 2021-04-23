@@ -1,12 +1,16 @@
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserRepository } from './../repositories/users.repository';
+import { UserMetadata } from './user_metadata.entity';
 import {
   Field,
   InputType,
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
+import { AfterInsert, Column, Entity, getRepository, OneToMany, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { UserMetadataRepository } from '../repositories/user_metadata.repository';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 // import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
@@ -25,6 +29,10 @@ registerEnumType(UserRole, { name: 'UserRole' });
 @ObjectType()
 @Entity()
 export class User extends CoreEntity {
+  // private readonly userMetadataRepository: UserMetadataRepository;
+  private readonly userMetadataRepository: Repository<UserMetadata>;
+  private readonly userRepository: UserRepository;
+
   @Column({ unique: true })
   @Field(type => String)
   @IsEmail()
@@ -74,18 +82,20 @@ export class User extends CoreEntity {
   // )
   // rides: Order[];
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword(): Promise<void> {
-    if (this.password) {
-      try {
-        this.password = await bcrypt.hash(this.password, 10);
-      } catch (e) {
-        console.log(e);
-        throw new InternalServerErrorException();
-      }
-    }
-  }
+  // @AfterInsert()
+  // async afterInsert(): Promise<void>{
+  //   const temp = getRepository(UserMetadata).create(
+  //     {id: this.id,
+  //       userId:this.id,
+  //       firstName:"firstName",
+  //       lastName:"lastName",
+  //       email:"email",
+  //       country:"country",
+  //       postalCode:"postalCode",
+  //       address:"address",}
+  //   );
+  //   getRepository(UserMetadata).save(temp)
+  // }
 
   async checkPassword(aPassword: string): Promise<boolean> {
     try {
