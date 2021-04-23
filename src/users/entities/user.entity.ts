@@ -82,20 +82,20 @@ export class User extends CoreEntity {
   // )
   // rides: Order[];
 
-  // @AfterInsert()
-  // async afterInsert(): Promise<void>{
-  //   const temp = getRepository(UserMetadata).create(
-  //     {id: this.id,
-  //       userId:this.id,
-  //       firstName:"firstName",
-  //       lastName:"lastName",
-  //       email:"email",
-  //       country:"country",
-  //       postalCode:"postalCode",
-  //       address:"address",}
-  //   );
-  //   getRepository(UserMetadata).save(temp)
-  // }
+  @AfterInsert()
+  async afterInsert(): Promise<void>{
+    const temp = getRepository(UserMetadata).create(
+      {id: this.id,
+        userId:this.id,
+        firstName:"firstName",
+        lastName:"lastName",
+        email:"email",
+        country:"country",
+        postalCode:"postalCode",
+        address:"address",}
+    );
+    getRepository(UserMetadata).save(temp)
+  }
 
   async checkPassword(aPassword: string): Promise<boolean> {
     try {
